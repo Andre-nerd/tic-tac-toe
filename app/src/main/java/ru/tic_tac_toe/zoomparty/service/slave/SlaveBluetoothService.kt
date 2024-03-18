@@ -16,36 +16,31 @@ import ru.tic_tac_toe.zoomparty.service.BaseService
 import java.io.IOException
 
 
-
-
 @SuppressLint("MissingPermission")
 class SlaveBluetoothService() : Thread(), BaseService {
+    private var slaveBindThread:SlaveBindThread? = null
     private var device: BluetoothDevice? = null
 
     init {
-        val device = App.bluetoothAdapter.getRemoteDevice("00:D2:79:72:B5:03")
-        Log.d(BT_LOG_TAG, "SlaveBluetoothService() init  device  = $device")
         setDevice(App.bluetoothAdapter.getRemoteDevice("00:D2:79:72:B5:03"))
     }
 
-    fun setDevice(device: BluetoothDevice){
+    fun setDevice(device: BluetoothDevice) {
         this.device = device
     }
-    private var mmSocket: BluetoothSocket?  = null
-    @SuppressLint("MissingPermission")
+
+    private var mmSocket: BluetoothSocket? = null
+
     override fun run() {
-        // Cancel discovery because it otherwise slows down the connection.
         App.bluetoothAdapter.cancelDiscovery()
-        val scope = CoroutineScope(Job() + Dispatchers.IO)
     }
 
-    override suspend fun receiveData(){
+    override suspend fun receiveData() {
         var numBytes: Int // bytes returned from read()
         val fBuffer: ByteArray = ByteArray(1)
         val fourBuffer: ByteArray = ByteArray(4)
         while (true) {
-            Log.d(BT_LOG_TAG, "ConnectedThread fun while (true){")
-            // Read from the InputStream.
+            Log.d(BT_LOG_TAG, "SlaveBluetoothService | fun receiveData() running... ")
             numBytes = try {
                 mmSocket?.inputStream?.read(fBuffer)
                 if (fBuffer[0] != 36.toByte()) {
@@ -64,40 +59,31 @@ class SlaveBluetoothService() : Thread(), BaseService {
 
     override suspend fun openConnection(device: BluetoothDevice?) {
 
-        if(this.device == null){
+        if (this.device == null) {
             Log.d(BT_LOG_TAG, "SlaveBindService | device  == null | open connection failed")
             return
         }
-        val slaveBindThread = SlaveBindThread(this.device!!){ socket ->
+        slaveBindThread = SlaveBindThread(this.device!!) { socket ->
             mmSocket = socket
-            Log.i(BT_LOG_TAG, "Client | SocketServiceBT | socketThread!!.start()")
             Log.i(BT_LOG_TAG, "Client | SocketServiceBT | socket = $mmSocket")
 
-            if (mmSocket == null){
+            if (mmSocket == null) {
                 Log.i(BT_LOG_TAG, "Client | SocketServiceBT | null socket return false")
             }
-            if(mmSocket?.isConnected == true){
+            if (mmSocket?.isConnected == true) {
                 Log.i(BT_LOG_TAG, "Client | SocketServiceBT | mmSocket?.isConnected ${mmSocket?.isConnected}")
             }
             val scope = CoroutineScope(Job() + Dispatchers.IO)
-            scope.launch{
-                if(mmSocket?.isConnected == true){
+            scope.launch {
+                if (mmSocket?.isConnected == true) {
                     Log.d(BT_LOG_TAG, "ConnectedThread fun while (true){")
                     receiveData()
                 }
             }
         }
-        slaveBindThread.start()
+        slaveBindThread?.start()
     }
 
-    override fun closeConnection() {
-        try {
-            mmSocket?.close()
-            Log.e(BT_LOG_TAG, "Client | ConnectBluetoothThread | mmSocket?.close() success $mmSocket")
-        } catch (e: IOException) {
-            Log.e(BT_LOG_TAG, "Client | Could not close the client socket", e)
-        }
-    }
 
     override suspend fun sendData(data: ByteArray) {
         try {
@@ -108,6 +94,15 @@ class SlaveBluetoothService() : Thread(), BaseService {
         } catch (e: IOException) {
             Log.e(BT_LOG_TAG, "Error occurred when sending data", e)
             return
+        }
+    }
+    override fun closeConnection() {
+        try {
+            mmSocket?.close()
+            slaveBindThread?.cancel()
+            Log.e(BT_LOG_TAG, "Client | ConnectBluetoothThread | mmSocket?.close() success $mmSocket")
+        } catch (e: IOException) {
+            Log.e(BT_LOG_TAG, "Client | Could not close the client socket", e)
         }
     }
 }

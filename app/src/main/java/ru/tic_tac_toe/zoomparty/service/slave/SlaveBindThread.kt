@@ -10,31 +10,22 @@ import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
 import java.io.IOException
 import java.util.UUID
 
-
-
-
 @SuppressLint("MissingPermission")
 class SlaveBindThread(
     device: BluetoothDevice,
     private val callback: (socket: BluetoothSocket?) -> Unit
-
 ) : Thread() {
     private val uuid = UUID.fromString("e17adf11-0edf-4263-ba1d-f84bd12e5be2")
 
     private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-        Log.e(BT_LOG_TAG, "Client | ConnectBluetoothThread | try connect with device  ${device.address}")
         device.createRfcommSocketToServiceRecord(uuid)
     }
     @SuppressLint("MissingPermission")
-    public override fun run() {
-        // Cancel discovery because it otherwise slows down the connection.
+    override fun run() {
         App.bluetoothAdapter.cancelDiscovery()
 
         mmSocket?.let { socket ->
-            Log.i(BT_LOG_TAG, "Client | ConnectBluetoothThread | get socket  $socket")
-            // Connect to the remote device through the socket. This call blocks
-            // until it succeeds or throws an exception.
-            Log.e(BT_LOG_TAG, "Client | ConnectBluetoothThread | try socket connect...")
+            Log.i(BT_LOG_TAG, "Client | ConnectBluetoothThread | get socket  $socket | try connect...")
             try {
                 socket.connect()
                 Log.i(BT_LOG_TAG, "Client | ConnectBluetoothThread | socket connect success")
@@ -45,7 +36,6 @@ class SlaveBindThread(
             }
         }
     }
-
 
     fun cancel() {
         try {

@@ -17,6 +17,7 @@ import java.io.IOException
 class MasterBluetoothService() : Thread(), BaseService {
 
     private var mmSocket: BluetoothSocket? = null
+    private var acceptTread:MasterAcceptThread? = null
 
     override fun run() {
         val scope = CoroutineScope(Job() + Dispatchers.IO)
@@ -64,13 +65,13 @@ class MasterBluetoothService() : Thread(), BaseService {
     }
 
     override suspend fun openConnection(device: BluetoothDevice?) {
-        val acceptTread = MasterAcceptThread() { socket ->
+        acceptTread = MasterAcceptThread() { socket ->
             mmSocket = socket
             CoroutineScope(Job() + Dispatchers.IO).launch {
                 receiveData()
             }
         }
-        acceptTread.start()
+        acceptTread?.start()
     }
 
     override suspend fun sendData(data: ByteArray) {
@@ -88,6 +89,7 @@ class MasterBluetoothService() : Thread(), BaseService {
     override fun closeConnection() {
         try {
             mmSocket?.close()
+            acceptTread?.cancel()
         } catch (e: IOException) {
             Log.e(BT_LOG_TAG, "Could not close the connect socket", e)
         }

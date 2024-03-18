@@ -14,12 +14,10 @@ class MasterAcceptThread(private val callback:(s: BluetoothSocket)->Unit) : Thre
     private val uuid: UUID = UUID.fromString("e17adf11-0edf-4263-ba1d-f84bd12e5be2")
 
     private val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
-        App.bluetoothAdapter?.listenUsingInsecureRfcommWithServiceRecord("ATB terminal", uuid )
+        App.bluetoothAdapter?.listenUsingInsecureRfcommWithServiceRecord("slave", uuid )
     }
 
-
     override fun run() {
-        Log.e(BT_LOG_TAG, "AcceptThread run")
         var shouldLoop = true
         while (shouldLoop) {
             val socket: BluetoothSocket? = try {
@@ -38,7 +36,6 @@ class MasterAcceptThread(private val callback:(s: BluetoothSocket)->Unit) : Thre
         }
     }
 
-    // Closes the connect socket and causes the thread to finish.
     fun cancel() {
         try {
             mmServerSocket?.close()
