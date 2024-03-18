@@ -15,6 +15,7 @@ class App : Application() {
 
     override fun onTerminate() {
         super.onTerminate()
+        StateHolder.remoteService?.closeConnection()
 
     }
 

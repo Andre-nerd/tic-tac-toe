@@ -33,13 +33,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,18 +56,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import i.tic_tac_toe.kotlin.ui.widgets.ShowScreenRationalePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.tic_tac_toe.zoomparty.StateHolder.remoteService
+import ru.tic_tac_toe.zoomparty.service.master.MasterBluetoothService
+import ru.tic_tac_toe.zoomparty.service.slave.SlaveBluetoothService
 import ru.tic_tac_toe.zoomparty.ui.theme.CianDark
 import ru.tic_tac_toe.zoomparty.ui.theme.CianLight
 import ru.tic_tac_toe.zoomparty.ui.theme.Tic_tac_toeTheme
 import ru.tic_tac_toe.zoomparty.ui.theme.styleAboutText
+import ru.tic_tac_toe.zoomparty.ui.widgets.DialogSelectOptionRadioGroup
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("MissingPermission")
@@ -134,10 +138,39 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val showBoxMessage = StateHolder.messageWasReceive.collectAsState()
     Column {
-        DisplayRemoteDeviceStatus()
-        Spacer(modifier = Modifier.size(20.dp))
+
+        MasterOrSlave()
         AnimatedMessageBox(showBoxMessage.value)
-        LastMessageDisplay()
+
+    }
+}
+@SuppressLint("CoroutineCreationDuringComposition")
+@Composable
+fun MasterOrSlave(){
+    var openDialog by remember { mutableStateOf(false) }
+    Button(onClick = {openDialog = !openDialog}){
+      Text(text = "Выбрать роль для этого устройства" )
+    }
+    Button(onClick = {
+        CoroutineScope(Job() + Dispatchers.IO).launch {
+            remoteService?.sendData(byteArrayOf(36,99,77,55,22))
+        }
+    }) {
+        Text(text = "Послать сообщение")
+    }
+    if (openDialog) {
+        DialogSelectOptionRadioGroup(
+            onDismissRequest = { openDialog = false },
+            onConfirmation = { selectedOption ->
+                openDialog = false
+                remoteService = if(selectedOption == 0) MasterBluetoothService() else SlaveBluetoothService()
+                remoteService!!.start()
+                CoroutineScope(Job() +Dispatchers.IO).launch {
+                    remoteService!!.openConnection(null)
+                }
+
+            }
+        )
     }
 }
 

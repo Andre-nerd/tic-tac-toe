@@ -11,23 +11,24 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.StateHolder
 import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
-import ru.tic_tac_toe.zoomparty.service.RemoteService
+import ru.tic_tac_toe.zoomparty.service.BaseService
 import java.io.IOException
 
-class MasterBluetoothService(
-    private val receiveData: (ByteArray) -> Unit,
-) : Thread(), RemoteService {
+class MasterBluetoothService() : Thread(), BaseService {
 
     private var mmSocket: BluetoothSocket? = null
 
     override fun run() {
         val scope = CoroutineScope(Job() + Dispatchers.IO)
-        Log.d(BT_LOG_TAG, "ConnectedThread fun run() mmSocket = $mmSocket")
-        Log.d(BT_LOG_TAG, "ConnectedThread fun run() mmSocket.isConnected = ${mmSocket?.isConnected}")
         if (mmSocket?.isConnected == true) StateHolder.putStateIsConnectRemoteDevice(true)
         try {
             scope.launch {
-                receiveData()
+                openConnection()
+                Log.d(BT_LOG_TAG, "MasterBluetoothService running... fun run() mmSocket = $mmSocket")
+                Log.d(BT_LOG_TAG, "MasterBluetoothService running... run() mmSocket.isConnected = ${mmSocket?.isConnected}")
+                if (mmSocket?.isConnected == true) {
+                    receiveData()
+                }
             }
 
         } catch (e: IOException) {
@@ -51,13 +52,9 @@ class MasterBluetoothService(
                     continue
                 }
                 mmSocket?.inputStream?.read(fourBuffer)
-                val lengthData = 14
-                Log.i(BT_LOG_TAG, "Get header ${fBuffer[0]} ${fourBuffer.toList()} | lengthData = $lengthData")
-                val dBuffer: ByteArray = ByteArray(lengthData.toInt() + 1)
-                val countBytes = mmSocket?.inputStream?.read(dBuffer) ?: 0
-                receiveData.invoke(fBuffer + fourBuffer + dBuffer)
-                Log.i(BT_LOG_TAG, "Get data + crc ${dBuffer.toList()}")
-                countBytes
+//                receiveData.invoke(fBuffer + fourBuffer)
+                Log.d(BT_LOG_TAG, "MasterBluetoothService() get message ${fourBuffer.toList()}")
+                5
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
                 throw e
@@ -69,6 +66,9 @@ class MasterBluetoothService(
     override suspend fun openConnection(device: BluetoothDevice?) {
         val acceptTread = MasterAcceptThread() { socket ->
             mmSocket = socket
+            CoroutineScope(Job() + Dispatchers.IO).launch {
+                receiveData()
+            }
         }
         acceptTread.start()
     }

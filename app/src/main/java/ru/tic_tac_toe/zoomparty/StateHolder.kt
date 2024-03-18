@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.tic_tac_toe.zoomparty.service.BaseService
 
 object StateHolder {
 
@@ -44,4 +45,6 @@ object StateHolder {
     fun putRemoteDeviceToStorage(device: BluetoothDevice) {
         remoteDevice = device
     }
+
+    var remoteService: BaseService? = null
 }

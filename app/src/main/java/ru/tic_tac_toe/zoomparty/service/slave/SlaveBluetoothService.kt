@@ -12,17 +12,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.App
 import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
-import ru.tic_tac_toe.zoomparty.service.RemoteService
+import ru.tic_tac_toe.zoomparty.service.BaseService
 import java.io.IOException
 
 
 
 
 @SuppressLint("MissingPermission")
-class SlaveBluetoothService(
-    private val receiveData:(data:ByteArray) -> Unit,
-) : Thread(), RemoteService {
+class SlaveBluetoothService() : Thread(), BaseService {
     private var device: BluetoothDevice? = null
+
+    init {
+        val device = App.bluetoothAdapter.getRemoteDevice("00:D2:79:72:B5:03")
+        Log.d(BT_LOG_TAG, "SlaveBluetoothService() init  device  = $device")
+        setDevice(App.bluetoothAdapter.getRemoteDevice("00:D2:79:72:B5:03"))
+    }
 
     fun setDevice(device: BluetoothDevice){
         this.device = device
@@ -33,9 +37,6 @@ class SlaveBluetoothService(
         // Cancel discovery because it otherwise slows down the connection.
         App.bluetoothAdapter.cancelDiscovery()
         val scope = CoroutineScope(Job() + Dispatchers.IO)
-        scope.launch{
-            receiveData()
-        }
     }
 
     override suspend fun receiveData(){
@@ -51,11 +52,9 @@ class SlaveBluetoothService(
                     continue
                 }
                 mmSocket?.inputStream?.read(fourBuffer)
-                val lengthData = 14
-                val dBuffer: ByteArray = ByteArray(lengthData.toInt() + 1)
-                val countBytes =  mmSocket?.inputStream?.read(dBuffer) ?: 0
-                receiveData.invoke(fBuffer + fourBuffer + dBuffer)
-                countBytes
+//                receiveData.invoke(fBuffer + fourBuffer)
+                Log.i(BT_LOG_TAG, "SlaveBluetoothService() get message ${fourBuffer.toList()}")
+                5
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
                 throw e
@@ -64,11 +63,12 @@ class SlaveBluetoothService(
     }
 
     override suspend fun openConnection(device: BluetoothDevice?) {
-        if(device == null){
+
+        if(this.device == null){
             Log.d(BT_LOG_TAG, "SlaveBindService | device  == null | open connection failed")
             return
         }
-        val slaveBindThread = SlaveBindThread(device){ socket ->
+        val slaveBindThread = SlaveBindThread(this.device!!){ socket ->
             mmSocket = socket
             Log.i(BT_LOG_TAG, "Client | SocketServiceBT | socketThread!!.start()")
             Log.i(BT_LOG_TAG, "Client | SocketServiceBT | socket = $mmSocket")
@@ -78,6 +78,13 @@ class SlaveBluetoothService(
             }
             if(mmSocket?.isConnected == true){
                 Log.i(BT_LOG_TAG, "Client | SocketServiceBT | mmSocket?.isConnected ${mmSocket?.isConnected}")
+            }
+            val scope = CoroutineScope(Job() + Dispatchers.IO)
+            scope.launch{
+                if(mmSocket?.isConnected == true){
+                    Log.d(BT_LOG_TAG, "ConnectedThread fun while (true){")
+                    receiveData()
+                }
             }
         }
         slaveBindThread.start()
