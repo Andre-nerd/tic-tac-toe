@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.tic_tac_toe.zoomparty.App
-import ru.tic_tac_toe.zoomparty.data.service.BaseService
-import ru.tic_tac_toe.zoomparty.data.service.RemoteServiceProvider
+import ru.tic_tac_toe.zoomparty.domain.BaseService
+import ru.tic_tac_toe.zoomparty.domain.RemoteServiceProvider
 import ru.tic_tac_toe.zoomparty.domain.WorkProfile
 import javax.inject.Inject
 
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ServiceViewModel @Inject constructor(
     private val serviceProvider: RemoteServiceProvider
 ) : ViewModel() {
-    var remoteService: BaseService? = null
+    private var remoteService: BaseService? = null
 
     @SuppressLint("MissingPermission")
     fun getBoundedDevices(): Set<BluetoothDevice> {
@@ -32,7 +32,7 @@ class ServiceViewModel @Inject constructor(
         remoteService!!.start()
         connectWithRemoteService(device)
     }
-    fun connectWithRemoteService(device: BluetoothDevice?){
+    private fun connectWithRemoteService(device: BluetoothDevice?){
         viewModelScope.launch {
             remoteService?.openConnection(device)
         }

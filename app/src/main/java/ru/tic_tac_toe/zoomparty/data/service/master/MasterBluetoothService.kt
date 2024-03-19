@@ -11,15 +11,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.presentation.StateHolder
 import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
-import ru.tic_tac_toe.zoomparty.data.service.BaseService
+import ru.tic_tac_toe.zoomparty.domain.BaseService
 import ru.tic_tac_toe.zoomparty.data.service.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER
 import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER_VALUE
-import ru.tic_tac_toe.zoomparty.data.service.WrapperMutableStateFlow
+import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import java.io.IOException
 import javax.inject.Inject
 
-class MasterBluetoothService @Inject constructor(private val dataContainer: WrapperMutableStateFlow) : Thread(), BaseService {
+class MasterBluetoothService @Inject constructor(private val dataContainer: WrapperDataContainer) : Thread(), BaseService {
 
     private var mmSocket: BluetoothSocket? = null
     private var acceptTread: MasterAcceptThread? = null

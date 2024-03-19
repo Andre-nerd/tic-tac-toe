@@ -8,22 +8,21 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.App
 import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
-import ru.tic_tac_toe.zoomparty.data.service.BaseService
+import ru.tic_tac_toe.zoomparty.domain.BaseService
 import ru.tic_tac_toe.zoomparty.data.service.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER
 import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER_VALUE
-import ru.tic_tac_toe.zoomparty.data.service.WrapperMutableStateFlow
+import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import java.io.IOException
 import javax.inject.Inject
 
 
 @SuppressLint("MissingPermission")
-class SlaveBluetoothService @Inject constructor(private val dataContainer: WrapperMutableStateFlow) : Thread(), BaseService {
+class SlaveBluetoothService @Inject constructor(private val dataContainer: WrapperDataContainer) : Thread(), BaseService {
     private var slaveBindThread: SlaveBindThread? = null
     private var device: BluetoothDevice? = null
 

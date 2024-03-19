@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty.data.service
+package ru.tic_tac_toe.zoomparty.domain
 
 import android.bluetooth.BluetoothDevice
 
