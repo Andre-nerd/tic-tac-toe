@@ -32,28 +32,8 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40
 
 )
-const val fontSize = 14
-const val fontSizeSmall = 12
-const val fontSizeMin = 10
-val styleAboutText = TextStyle(
-    fontSize = fontSizeSmall.sp,
-    lineHeight = 18.sp,
-    fontFamily = FontFamily.SansSerif,
-    textAlign = TextAlign.Justify
-)
-val styleAboutTextBold = TextStyle(
-    fontSize = fontSizeSmall.sp,
-    lineHeight = 18.sp,
-    fontFamily = FontFamily.SansSerif,
-    textAlign = TextAlign.Justify,
-    fontWeight = FontWeight.Bold
-)
-val styleMinText = TextStyle(
-    fontSize = fontSizeMin.sp,
-    lineHeight = 12.sp,
-    fontFamily = FontFamily.SansSerif,
-    textAlign = TextAlign.Justify
-)
+
+
 
 @Composable
 fun Tic_tac_toeTheme(

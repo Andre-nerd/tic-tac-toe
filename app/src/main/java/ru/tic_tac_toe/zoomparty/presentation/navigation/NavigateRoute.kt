@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ru.tic_tac_toe.zoomparty.presentation.GameScreen
 import ru.tic_tac_toe.zoomparty.presentation.ServiceViewModel
-import ru.tic_tac_toe.zoomparty.presentation.SettingScreen
+import ru.tic_tac_toe.zoomparty.presentation.sreens.SettingScreen
 
 @Composable
 fun NavigateRoute(

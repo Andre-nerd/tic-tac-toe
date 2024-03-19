@@ -105,10 +105,40 @@ fun MainScreen(){
 }
 
 
+//@Composable
+//fun SettingScreen(serviceViewModel:ServiceViewModel,navController: NavHostController) {
+//    Column {
+//        MasterOrSlave(serviceViewModel, navController)
+//    }
+//}
 @Composable
-fun SettingScreen(serviceViewModel:ServiceViewModel,navController: NavHostController) {
+fun SelectWorkProfile(serviceViewModel:ServiceViewModel, navController: NavHostController){
+
+    var openDialog by remember { mutableStateOf(false) }
     Column {
-        MasterOrSlave(serviceViewModel, navController)
+        Button(onClick = { openDialog = !openDialog }) {
+            Text(text = "Выбрать роль для этого устройства")
+        }
+        Button(onClick = {
+            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
+        }) {
+            Text(text = "Послать сообщение")
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Button(onClick = {
+            navController.navigate(Route.Game.name)
+        }) {
+            Text(text = "Пропустить")
+        }
+    }
+    if (openDialog) {
+        DialogSelectOptionRadioGroup(
+            onDismissRequest = { openDialog = false },
+            onConfirmation = { workProfile ->
+                openDialog = false
+                serviceViewModel.connectionWithRemoteService(workProfile, null)
+            }
+        )
     }
 }
 
@@ -147,6 +177,11 @@ fun GameScreen(serviceViewModel:ServiceViewModel, navController: NavHostControll
     Column {
         Button(onClick = { navController.navigate(Route.Setting.name) }) {
             Text(text = "Это гейм скрин")
+        }
+        Button(onClick = {
+            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
+        }) {
+            Text(text = "Послать сообщение")
         }
     }
 }

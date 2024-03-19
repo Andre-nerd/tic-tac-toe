@@ -9,11 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.domain.BaseService
-import ru.tic_tac_toe.zoomparty.data.service.DATA_BUFFER
-import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER
-import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.domain.Configuration.BT_LOG_TAG
+import ru.tic_tac_toe.zoomparty.domain.Configuration.DATA_BUFFER
+import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER
+import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER_VALUE
+
 import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import java.io.IOException
 import javax.inject.Inject

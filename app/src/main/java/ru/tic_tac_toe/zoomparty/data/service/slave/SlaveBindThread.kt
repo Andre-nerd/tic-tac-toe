@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
 import ru.tic_tac_toe.zoomparty.App
-import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
+import ru.tic_tac_toe.zoomparty.domain.Configuration.BT_LOG_TAG
 
 import java.io.IOException
 import java.util.UUID
