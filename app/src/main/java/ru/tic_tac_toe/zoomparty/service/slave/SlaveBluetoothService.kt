@@ -17,11 +17,13 @@ import ru.tic_tac_toe.zoomparty.service.BaseService
 import ru.tic_tac_toe.zoomparty.service.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.service.F_BUFFER
 import ru.tic_tac_toe.zoomparty.service.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.service.WrapperMutableStateFlow
 import java.io.IOException
+import javax.inject.Inject
 
 
 @SuppressLint("MissingPermission")
-class SlaveBluetoothService(private val dataContainer: (ByteArray) -> Unit) : Thread(), BaseService {
+class SlaveBluetoothService @Inject constructor(private val dataContainer: WrapperMutableStateFlow) : Thread(), BaseService {
     private var slaveBindThread: SlaveBindThread? = null
     private var device: BluetoothDevice? = null
 
@@ -52,7 +54,7 @@ class SlaveBluetoothService(private val dataContainer: (ByteArray) -> Unit) : Th
                     continue
                 }
                 mmSocket?.inputStream?.read(dataBuffer)
-                dataContainer.invoke(fBuffer + dataBuffer)
+                dataContainer.putMessageLastReceived(fBuffer + dataBuffer)
                 fBuffer.size + dataBuffer.size
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)

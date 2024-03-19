@@ -59,13 +59,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import dagger.hilt.android.AndroidEntryPoint
 import i.tic_tac_toe.kotlin.ui.widgets.ShowScreenRationalePermission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.tic_tac_toe.zoomparty.StateHolder.putMessageLastReceived
 import ru.tic_tac_toe.zoomparty.StateHolder.remoteService
+import ru.tic_tac_toe.zoomparty.service.BaseService
 import ru.tic_tac_toe.zoomparty.service.master.MasterBluetoothService
 import ru.tic_tac_toe.zoomparty.service.slave.SlaveBluetoothService
 import ru.tic_tac_toe.zoomparty.ui.theme.CianDark
@@ -73,7 +74,9 @@ import ru.tic_tac_toe.zoomparty.ui.theme.CianLight
 import ru.tic_tac_toe.zoomparty.ui.theme.Tic_tac_toeTheme
 import ru.tic_tac_toe.zoomparty.ui.theme.styleAboutText
 import ru.tic_tac_toe.zoomparty.ui.widgets.DialogSelectOptionRadioGroup
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @SuppressLint("MissingPermission")
     private val pushOnBluetoothLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -81,6 +84,8 @@ class MainActivity : ComponentActivity() {
             val intent = result.data
         }
     }
+    @Inject lateinit var masterService:MasterBluetoothService
+    @Inject lateinit var slaveService:SlaveBluetoothService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -117,7 +122,7 @@ class MainActivity : ComponentActivity() {
         )
         if (permissionsState.allPermissionsGranted) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                MainScreen()
+                MainScreen(masterService,slaveService)
                 IndicatorBalls()
             }
         } else {
@@ -135,18 +140,18 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MainScreen() {
+fun MainScreen(masterService:BaseService,slaveService:BaseService) {
     val showBoxMessage = StateHolder.messageWasReceive.collectAsState()
     Column {
 
-        MasterOrSlave()
+        MasterOrSlave(masterService,slaveService)
         AnimatedMessageBox(showBoxMessage.value)
 
     }
 }
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MasterOrSlave(){
+fun MasterOrSlave(masterService:BaseService,slaveService:BaseService){
     var openDialog by remember { mutableStateOf(false) }
     Button(onClick = {openDialog = !openDialog}){
       Text(text = "Выбрать роль для этого устройства" )
@@ -163,7 +168,7 @@ fun MasterOrSlave(){
             onDismissRequest = { openDialog = false },
             onConfirmation = { selectedOption ->
                 openDialog = false
-                remoteService = if(selectedOption == 0) MasterBluetoothService(::putMessageLastReceived) else SlaveBluetoothService(::putMessageLastReceived)
+                remoteService = if(selectedOption == 0) masterService else slaveService
                 remoteService!!.start()
                 CoroutineScope(Job() +Dispatchers.IO).launch {
                     remoteService!!.openConnection(null)
@@ -225,31 +230,31 @@ fun DisplayRemoteDeviceStatus() {
     }
 }
 
-@Composable
-fun LastMessageDisplay(){
-    val lastMessage  = StateHolder.messageLastReceived.collectAsState()
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
-
-        ) {
-        Text(
-            text = "Last message received: ",
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 16.dp)
-        )
-        Text(
-            text = "${lastMessage.value.toList()}",
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 16.dp)
-        )
-    }
-}
+//@Composable
+//fun LastMessageDisplay(){
+//    val lastMessage  = StateHolder.messageLastReceived.collectAsState()
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(start = 16.dp, end = 16.dp),
+//        verticalArrangement = Arrangement.Top,
+//        horizontalAlignment = Alignment.Start,
+//
+//        ) {
+//        Text(
+//            text = "Last message received: ",
+//            modifier = Modifier
+//                .align(Alignment.CenterHorizontally)
+//                .padding(top = 16.dp)
+//        )
+//        Text(
+//            text = "${lastMessage.value.toList()}",
+//            modifier = Modifier
+//                .align(Alignment.CenterHorizontally)
+//                .padding(top = 16.dp)
+//        )
+//    }
+//}
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable

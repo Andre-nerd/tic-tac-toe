@@ -16,9 +16,11 @@ import ru.tic_tac_toe.zoomparty.service.BaseService
 import ru.tic_tac_toe.zoomparty.service.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.service.F_BUFFER
 import ru.tic_tac_toe.zoomparty.service.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.service.WrapperMutableStateFlow
 import java.io.IOException
+import javax.inject.Inject
 
-class MasterBluetoothService(private val dataContainer: (ByteArray) -> Unit) : Thread(), BaseService {
+class MasterBluetoothService @Inject constructor(private val dataContainer: WrapperMutableStateFlow) : Thread(), BaseService {
 
     private var mmSocket: BluetoothSocket? = null
     private var acceptTread: MasterAcceptThread? = null
@@ -53,7 +55,7 @@ class MasterBluetoothService(private val dataContainer: (ByteArray) -> Unit) : T
                     continue
                 }
                 mmSocket?.inputStream?.read(dataBuffer)
-                dataContainer.invoke(fBuffer + dataBuffer)
+                dataContainer.putMessageLastReceived(fBuffer + dataBuffer)
                 fBuffer.size + dataBuffer.size
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
