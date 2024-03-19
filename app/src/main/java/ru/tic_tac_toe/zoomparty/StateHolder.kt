@@ -1,13 +1,16 @@
 package ru.tic_tac_toe.zoomparty
 
 import android.bluetooth.BluetoothDevice
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.service.BaseService
+import ru.tic_tac_toe.zoomparty.service.F_BUFFER_VALUE
 
 object StateHolder {
 
@@ -29,6 +32,7 @@ object StateHolder {
         _isConnectRemoteDevice.value = state
     }
     fun putMessageLastReceived(data:ByteArray) {
+        Log.i(BT_LOG_TAG, "fun putMessageLastReceived() | Get message ${data.toList()}")
         _messageLastReceived.value = data
     }
     fun signalThatMessageReceived(){

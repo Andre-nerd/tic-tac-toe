@@ -8,17 +8,21 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.App
 import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.service.BaseService
+import ru.tic_tac_toe.zoomparty.service.DATA_BUFFER
+import ru.tic_tac_toe.zoomparty.service.F_BUFFER
+import ru.tic_tac_toe.zoomparty.service.F_BUFFER_VALUE
 import java.io.IOException
 
 
 @SuppressLint("MissingPermission")
-class SlaveBluetoothService() : Thread(), BaseService {
-    private var slaveBindThread:SlaveBindThread? = null
+class SlaveBluetoothService(private val dataContainer: (ByteArray) -> Unit) : Thread(), BaseService {
+    private var slaveBindThread: SlaveBindThread? = null
     private var device: BluetoothDevice? = null
 
     init {
@@ -36,20 +40,20 @@ class SlaveBluetoothService() : Thread(), BaseService {
     }
 
     override suspend fun receiveData() {
-        var numBytes: Int // bytes returned from read()
-        val fBuffer: ByteArray = ByteArray(1)
-        val fourBuffer: ByteArray = ByteArray(4)
+        var numBytes: Int
+        val fBuffer = ByteArray(F_BUFFER)
+        val dataBuffer = ByteArray(DATA_BUFFER)
         while (true) {
             Log.d(BT_LOG_TAG, "SlaveBluetoothService | fun receiveData() running... ")
             numBytes = try {
                 mmSocket?.inputStream?.read(fBuffer)
-                if (fBuffer[0] != 36.toByte()) {
+                if (fBuffer[0] != F_BUFFER_VALUE) {
+                    Log.e(BT_LOG_TAG, "SlaveBluetoothService | Get first byte != $F_BUFFER_VALUE ${fBuffer[0]} | Continue receive ")
                     continue
                 }
-                mmSocket?.inputStream?.read(fourBuffer)
-//                receiveData.invoke(fBuffer + fourBuffer)
-                Log.i(BT_LOG_TAG, "SlaveBluetoothService() get message ${fourBuffer.toList()}")
-                5
+                mmSocket?.inputStream?.read(dataBuffer)
+                dataContainer.invoke(fBuffer + dataBuffer)
+                fBuffer.size + dataBuffer.size
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
                 throw e
@@ -58,7 +62,6 @@ class SlaveBluetoothService() : Thread(), BaseService {
     }
 
     override suspend fun openConnection(device: BluetoothDevice?) {
-
         if (this.device == null) {
             Log.d(BT_LOG_TAG, "SlaveBindService | device  == null | open connection failed")
             return
@@ -96,6 +99,7 @@ class SlaveBluetoothService() : Thread(), BaseService {
             return
         }
     }
+
     override fun closeConnection() {
         try {
             mmSocket?.close()

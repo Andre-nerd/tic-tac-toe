@@ -4,7 +4,9 @@ import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
@@ -16,7 +18,6 @@ class App : Application() {
     override fun onTerminate() {
         super.onTerminate()
         StateHolder.remoteService?.closeConnection()
-
     }
 
 
@@ -25,7 +26,6 @@ class App : Application() {
         lateinit var bluetoothAdapter: BluetoothAdapter
 
         private fun handlerReceivedData(data: ByteArray) {
-
 
         }
     }

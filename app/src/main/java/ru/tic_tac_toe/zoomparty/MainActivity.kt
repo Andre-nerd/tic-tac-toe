@@ -64,6 +64,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.tic_tac_toe.zoomparty.StateHolder.putMessageLastReceived
 import ru.tic_tac_toe.zoomparty.StateHolder.remoteService
 import ru.tic_tac_toe.zoomparty.service.master.MasterBluetoothService
 import ru.tic_tac_toe.zoomparty.service.slave.SlaveBluetoothService
@@ -78,7 +79,6 @@ class MainActivity : ComponentActivity() {
     private val pushOnBluetoothLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             val intent = result.data
-
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,7 +163,7 @@ fun MasterOrSlave(){
             onDismissRequest = { openDialog = false },
             onConfirmation = { selectedOption ->
                 openDialog = false
-                remoteService = if(selectedOption == 0) MasterBluetoothService() else SlaveBluetoothService()
+                remoteService = if(selectedOption == 0) MasterBluetoothService(::putMessageLastReceived) else SlaveBluetoothService(::putMessageLastReceived)
                 remoteService!!.start()
                 CoroutineScope(Job() +Dispatchers.IO).launch {
                     remoteService!!.openConnection(null)
