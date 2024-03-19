@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,7 +103,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalPermissionsApi::class)
     @Composable
-    private fun FeatureThatRequiresPermissions() {
+    private fun FeatureThatRequiresPermissions(serviceViewModel:ServiceViewModel = viewModel()) {
 
         val permissionsState = rememberMultiplePermissionsState(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -124,7 +125,7 @@ class MainActivity : ComponentActivity() {
         )
         if (permissionsState.allPermissionsGranted) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                MainScreen(masterService,slaveService)
+                MainScreen(serviceViewModel)
                 IndicatorBalls()
             }
         } else {
@@ -142,25 +143,26 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MainScreen(masterService: BaseService, slaveService: BaseService) {
+fun MainScreen(serviceViewModel:ServiceViewModel) {
     val showBoxMessage = StateHolder.messageWasReceive.collectAsState()
     Column {
 
-        MasterOrSlave(masterService,slaveService)
+        MasterOrSlave(serviceViewModel)
         AnimatedMessageBox(showBoxMessage.value)
 
     }
 }
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MasterOrSlave(masterService: BaseService, slaveService: BaseService){
+fun MasterOrSlave(serviceViewModel:ServiceViewModel){
+
     var openDialog by remember { mutableStateOf(false) }
     Button(onClick = {openDialog = !openDialog}){
       Text(text = "Выбрать роль для этого устройства" )
     }
     Button(onClick = {
         CoroutineScope(Job() + Dispatchers.IO).launch {
-            remoteService?.sendData(byteArrayOf(36,99,77,55,22))
+            serviceViewModel.sendData(byteArrayOf(36,99,77,55,22))
         }
     }) {
         Text(text = "Послать сообщение")
@@ -170,10 +172,11 @@ fun MasterOrSlave(masterService: BaseService, slaveService: BaseService){
             onDismissRequest = { openDialog = false },
             onConfirmation = { selectedOption ->
                 openDialog = false
-                remoteService = if(selectedOption == WorkProfile.MASTER) masterService else slaveService
-                remoteService!!.start()
+                serviceViewModel.setRemoteService(selectedOption)
+//                remoteService = if(selectedOption == WorkProfile.MASTER) masterService else slaveService
+//                remoteService!!.start()
                 CoroutineScope(Job() +Dispatchers.IO).launch {
-                    remoteService!!.openConnection(null)
+                    serviceViewModel.remoteService!!.openConnection(null)
                 }
             }
         )
