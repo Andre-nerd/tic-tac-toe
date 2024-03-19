@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty.service
+package ru.tic_tac_toe.zoomparty.data.service
 
 import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow

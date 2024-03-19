@@ -1,16 +1,13 @@
-package ru.tic_tac_toe.zoomparty
+package ru.tic_tac_toe.zoomparty.presentation
 
 import android.bluetooth.BluetoothDevice
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
-import ru.tic_tac_toe.zoomparty.service.BaseService
-import ru.tic_tac_toe.zoomparty.service.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.data.service.BaseService
 
 object StateHolder {
 

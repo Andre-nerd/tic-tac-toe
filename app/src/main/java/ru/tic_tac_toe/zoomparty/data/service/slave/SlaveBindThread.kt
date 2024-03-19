@@ -1,11 +1,11 @@
-package ru.tic_tac_toe.zoomparty.service.slave
+package ru.tic_tac_toe.zoomparty.data.service.slave
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
 import ru.tic_tac_toe.zoomparty.App
-import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
+import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
 
 import java.io.IOException
 import java.util.UUID

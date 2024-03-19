@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty.ui.theme
+package ru.tic_tac_toe.zoomparty.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

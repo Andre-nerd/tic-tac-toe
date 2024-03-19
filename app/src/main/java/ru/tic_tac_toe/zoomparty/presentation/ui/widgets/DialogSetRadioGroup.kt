@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty.ui.widgets
+package ru.tic_tac_toe.zoomparty.presentation.ui.widgets
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -27,14 +27,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import ru.tic_tac_toe.zoomparty.ui.theme.fontSizeSmall
+import ru.tic_tac_toe.zoomparty.domain.WorkProfile
+import ru.tic_tac_toe.zoomparty.presentation.ui.theme.fontSizeSmall
 
 const val DIALOG_LOG = "DIALOG_LOG"
 
 @Composable
 fun DialogSelectOptionRadioGroup(
     onDismissRequest: () -> Unit,
-    onConfirmation: (Int) -> Unit,
+    onConfirmation: (WorkProfile) -> Unit,
 ) {
     val radioOptions = listOf("Мастер", "Игрок")
     var selectedOption by remember { mutableStateOf(radioOptions[0]) }
@@ -92,7 +93,7 @@ fun DialogSelectOptionRadioGroup(
                         Text("Отмена")
                     }
                     TextButton(
-                        onClick = { onConfirmation(if(selectedOption == "Мастер") 0 else 1) },
+                        onClick = { onConfirmation(if(selectedOption == WorkProfile.MASTER.mName) WorkProfile.MASTER else WorkProfile.SLAVE) },
                         modifier = Modifier.padding(8.dp),
                     ) {
                         Text("Выбрать")

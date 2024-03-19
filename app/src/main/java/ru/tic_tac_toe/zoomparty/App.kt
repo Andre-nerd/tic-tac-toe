@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
+import ru.tic_tac_toe.zoomparty.presentation.StateHolder
 
 @HiltAndroidApp
 class App : Application() {

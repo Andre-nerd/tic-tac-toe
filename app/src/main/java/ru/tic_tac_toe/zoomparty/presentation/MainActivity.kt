@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty
+package ru.tic_tac_toe.zoomparty.presentation
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -65,15 +65,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.tic_tac_toe.zoomparty.StateHolder.remoteService
-import ru.tic_tac_toe.zoomparty.service.BaseService
-import ru.tic_tac_toe.zoomparty.service.master.MasterBluetoothService
-import ru.tic_tac_toe.zoomparty.service.slave.SlaveBluetoothService
-import ru.tic_tac_toe.zoomparty.ui.theme.CianDark
-import ru.tic_tac_toe.zoomparty.ui.theme.CianLight
-import ru.tic_tac_toe.zoomparty.ui.theme.Tic_tac_toeTheme
-import ru.tic_tac_toe.zoomparty.ui.theme.styleAboutText
-import ru.tic_tac_toe.zoomparty.ui.widgets.DialogSelectOptionRadioGroup
+import ru.tic_tac_toe.zoomparty.R
+import ru.tic_tac_toe.zoomparty.presentation.StateHolder.remoteService
+import ru.tic_tac_toe.zoomparty.data.service.BaseService
+import ru.tic_tac_toe.zoomparty.data.service.master.MasterBluetoothService
+import ru.tic_tac_toe.zoomparty.data.service.slave.SlaveBluetoothService
+import ru.tic_tac_toe.zoomparty.domain.WorkProfile
+import ru.tic_tac_toe.zoomparty.presentation.ui.theme.CianDark
+import ru.tic_tac_toe.zoomparty.presentation.ui.theme.CianLight
+import ru.tic_tac_toe.zoomparty.presentation.ui.theme.Tic_tac_toeTheme
+import ru.tic_tac_toe.zoomparty.presentation.ui.theme.styleAboutText
+import ru.tic_tac_toe.zoomparty.presentation.ui.widgets.DialogSelectOptionRadioGroup
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -84,8 +86,8 @@ class MainActivity : ComponentActivity() {
             val intent = result.data
         }
     }
-    @Inject lateinit var masterService:MasterBluetoothService
-    @Inject lateinit var slaveService:SlaveBluetoothService
+    @Inject lateinit var masterService: MasterBluetoothService
+    @Inject lateinit var slaveService: SlaveBluetoothService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -140,7 +142,7 @@ class MainActivity : ComponentActivity() {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MainScreen(masterService:BaseService,slaveService:BaseService) {
+fun MainScreen(masterService: BaseService, slaveService: BaseService) {
     val showBoxMessage = StateHolder.messageWasReceive.collectAsState()
     Column {
 
@@ -151,7 +153,7 @@ fun MainScreen(masterService:BaseService,slaveService:BaseService) {
 }
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MasterOrSlave(masterService:BaseService,slaveService:BaseService){
+fun MasterOrSlave(masterService: BaseService, slaveService: BaseService){
     var openDialog by remember { mutableStateOf(false) }
     Button(onClick = {openDialog = !openDialog}){
       Text(text = "Выбрать роль для этого устройства" )
@@ -168,12 +170,11 @@ fun MasterOrSlave(masterService:BaseService,slaveService:BaseService){
             onDismissRequest = { openDialog = false },
             onConfirmation = { selectedOption ->
                 openDialog = false
-                remoteService = if(selectedOption == 0) masterService else slaveService
+                remoteService = if(selectedOption == WorkProfile.MASTER) masterService else slaveService
                 remoteService!!.start()
                 CoroutineScope(Job() +Dispatchers.IO).launch {
                     remoteService!!.openConnection(null)
                 }
-
             }
         )
     }

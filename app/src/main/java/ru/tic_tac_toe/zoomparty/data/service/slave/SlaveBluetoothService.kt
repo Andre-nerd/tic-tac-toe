@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty.service.slave
+package ru.tic_tac_toe.zoomparty.data.service.slave
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.App
-import ru.tic_tac_toe.zoomparty.service.BT_LOG_TAG
-import ru.tic_tac_toe.zoomparty.service.BaseService
-import ru.tic_tac_toe.zoomparty.service.DATA_BUFFER
-import ru.tic_tac_toe.zoomparty.service.F_BUFFER
-import ru.tic_tac_toe.zoomparty.service.F_BUFFER_VALUE
-import ru.tic_tac_toe.zoomparty.service.WrapperMutableStateFlow
+import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
+import ru.tic_tac_toe.zoomparty.data.service.BaseService
+import ru.tic_tac_toe.zoomparty.data.service.DATA_BUFFER
+import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER
+import ru.tic_tac_toe.zoomparty.data.service.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.data.service.WrapperMutableStateFlow
 import java.io.IOException
 import javax.inject.Inject
 

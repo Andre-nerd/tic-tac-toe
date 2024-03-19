@@ -1,4 +1,4 @@
-package ru.tic_tac_toe.zoomparty.service
+package ru.tic_tac_toe.zoomparty.data.service
 
 const val BT_LOG_TAG = "BT_LOG_TAG"
 const val F_BUFFER = 1
