@@ -67,11 +67,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.tic_tac_toe.zoomparty.R
-import ru.tic_tac_toe.zoomparty.presentation.StateHolder.remoteService
-import ru.tic_tac_toe.zoomparty.data.service.BaseService
 import ru.tic_tac_toe.zoomparty.data.service.master.MasterBluetoothService
 import ru.tic_tac_toe.zoomparty.data.service.slave.SlaveBluetoothService
-import ru.tic_tac_toe.zoomparty.domain.WorkProfile
 import ru.tic_tac_toe.zoomparty.presentation.ui.theme.CianDark
 import ru.tic_tac_toe.zoomparty.presentation.ui.theme.CianLight
 import ru.tic_tac_toe.zoomparty.presentation.ui.theme.Tic_tac_toeTheme
@@ -170,14 +167,14 @@ fun MasterOrSlave(serviceViewModel:ServiceViewModel){
     if (openDialog) {
         DialogSelectOptionRadioGroup(
             onDismissRequest = { openDialog = false },
-            onConfirmation = { selectedOption ->
+            onConfirmation = { workProfile ->
                 openDialog = false
-                serviceViewModel.setRemoteService(selectedOption)
+                serviceViewModel.connectionWithRemoteService(workProfile, null)
 //                remoteService = if(selectedOption == WorkProfile.MASTER) masterService else slaveService
 //                remoteService!!.start()
-                CoroutineScope(Job() +Dispatchers.IO).launch {
-                    serviceViewModel.remoteService!!.openConnection(null)
-                }
+//                CoroutineScope(Job() +Dispatchers.IO).launch {
+//                    serviceViewModel.remoteService!!.openConnection(null)
+//                }
             }
         )
     }

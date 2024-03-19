@@ -8,15 +8,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.tic_tac_toe.zoomparty.App
 import ru.tic_tac_toe.zoomparty.data.service.BaseService
-import ru.tic_tac_toe.zoomparty.data.service.master.MasterBluetoothService
-import ru.tic_tac_toe.zoomparty.data.service.slave.SlaveBluetoothService
+import ru.tic_tac_toe.zoomparty.data.service.RemoteServiceProvider
 import ru.tic_tac_toe.zoomparty.domain.WorkProfile
 import javax.inject.Inject
 
 @HiltViewModel
 class ServiceViewModel @Inject constructor(
-    private val masterService: MasterBluetoothService,
-    private val slaveService: SlaveBluetoothService
+    private val serviceProvider: RemoteServiceProvider
 ) : ViewModel() {
     var remoteService: BaseService? = null
 
@@ -25,13 +23,14 @@ class ServiceViewModel @Inject constructor(
         return App.bluetoothAdapter?.bondedDevices ?: emptySet()
     }
 
-    fun setRemoteService(profile: WorkProfile) {
+    fun connectionWithRemoteService(profile: WorkProfile, device: BluetoothDevice?) {
         remoteService = if (profile == WorkProfile.MASTER) {
-            masterService as BaseService
+            serviceProvider.getMasterService()
         } else {
-            slaveService as BaseService
+            serviceProvider.getSlaveService()
         }
         remoteService!!.start()
+        connectWithRemoteService(device)
     }
     fun connectWithRemoteService(device: BluetoothDevice?){
         viewModelScope.launch {
