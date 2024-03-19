@@ -107,7 +107,6 @@ fun MainScreen(){
 
 @Composable
 fun SettingScreen(serviceViewModel:ServiceViewModel,navController: NavHostController) {
-    val showBoxMessage = StateHolder.messageWasReceive.collectAsState()
     Column {
         MasterOrSlave(serviceViewModel, navController)
     }

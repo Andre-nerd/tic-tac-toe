@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ru.tic_tac_toe.zoomparty.presentation.StateHolder
 import ru.tic_tac_toe.zoomparty.data.service.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.domain.BaseService
 import ru.tic_tac_toe.zoomparty.data.service.DATA_BUFFER
@@ -26,7 +25,7 @@ class MasterBluetoothService @Inject constructor(private val dataContainer: Wrap
 
     override fun run() {
         val scope = CoroutineScope(Job() + Dispatchers.IO)
-        if (mmSocket?.isConnected == true) StateHolder.putStateIsConnectRemoteDevice(true)
+//        if (mmSocket?.isConnected == true) StateHolder.putStateIsConnectRemoteDevice(true)
         try {
             scope.launch {
                 openConnection()
@@ -38,7 +37,7 @@ class MasterBluetoothService @Inject constructor(private val dataContainer: Wrap
             }
         } catch (e: IOException) {
             Log.d(BT_LOG_TAG, "ConnectedThread error fun getInputData(mmSocket)")
-            StateHolder.putStateIsConnectRemoteDevice(false)
+//            StateHolder.putStateIsConnectRemoteDevice(false)
         }
     }
 
