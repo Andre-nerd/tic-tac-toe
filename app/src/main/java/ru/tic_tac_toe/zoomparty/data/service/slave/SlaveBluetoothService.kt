@@ -7,7 +7,7 @@ import android.util.Log
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.App
@@ -16,6 +16,7 @@ import ru.tic_tac_toe.zoomparty.domain.Configuration.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.domain.Configuration.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER
 import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.domain.ErrorConnect
 import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import java.io.IOException
 import javax.inject.Inject
@@ -25,10 +26,6 @@ import javax.inject.Inject
 class SlaveBluetoothService @Inject constructor(private val dataContainer: WrapperDataContainer) : Thread(), BaseService {
     private var slaveBindThread: SlaveBindThread? = null
     private var device: BluetoothDevice? = null
-
-    init {
-        App.bluetoothAdapter?.getRemoteDevice("00:D2:79:72:B5:03")?.let { setDevice(it) }
-    }
 
     fun setDevice(device: BluetoothDevice) {
         this.device = device
@@ -53,11 +50,12 @@ class SlaveBluetoothService @Inject constructor(private val dataContainer: Wrapp
                     continue
                 }
                 mmSocket?.inputStream?.read(dataBuffer)
-                dataContainer.putMessageLastReceived(fBuffer + dataBuffer)
+                dataContainer.putMessageLastReceivedToContainer(fBuffer + dataBuffer)
                 fBuffer.size + dataBuffer.size
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
-                throw e
+                dataContainer.putErrorConnectToContainer(ErrorConnect.DisconnectSlaveError(e.message.toString()))
+                break
             }
         }
     }
@@ -77,11 +75,17 @@ class SlaveBluetoothService @Inject constructor(private val dataContainer: Wrapp
             if (mmSocket?.isConnected == true) {
                 Log.i(BT_LOG_TAG, "Client | SocketServiceBT | mmSocket?.isConnected ${mmSocket?.isConnected}")
             }
-            val scope = CoroutineScope(Job() + Dispatchers.IO)
+            val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
             scope.launch {
                 if (mmSocket?.isConnected == true) {
                     Log.d(BT_LOG_TAG, "ConnectedThread fun while (true){")
-                    receiveData()
+                    try {
+                        receiveData()
+                    }catch (t:Throwable){
+                        Log.d(BT_LOG_TAG, "ERROR SlaveBluetoothService | fun openConnection() | receiveData()  $t")
+                        throw t
+                    }
+
                 }
             }
         }

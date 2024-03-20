@@ -3,6 +3,7 @@ package ru.tic_tac_toe.zoomparty.presentation
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import ru.tic_tac_toe.zoomparty.data.service.RemoteServiceProvider
 import ru.tic_tac_toe.zoomparty.domain.Configuration
 import ru.tic_tac_toe.zoomparty.domain.Configuration.SHARED_PREF
 import ru.tic_tac_toe.zoomparty.domain.WorkProfile
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,29 +35,38 @@ class ServiceViewModel @Inject constructor(
         remoteService = if (profile == WorkProfile.MASTER) {
             serviceProvider.getMasterService()
         } else {
-            serviceProvider.getSlaveService()
+            if (device != null) serviceProvider.getSlaveService(device) else throw IOException("Error fun connectionWithRemoteService | bluetooth device  = null")
         }
         remoteService!!.start()
         connectWithRemoteService(device)
     }
-    private fun connectWithRemoteService(device: BluetoothDevice?){
+
+    private fun connectWithRemoteService(device: BluetoothDevice?) {
         viewModelScope.launch {
-            remoteService?.openConnection(device)
+            try{
+                remoteService?.openConnection(device)
+            } catch(e:Throwable){
+                Log.e(Configuration.BT_LOG_TAG, "ERROR ServiceViewModel | fun connectWithRemoteService | remoteService?.openConnection(device):$e")
+            }
+
         }
     }
-    fun sendData(byteArray: ByteArray){
+
+    fun sendData(byteArray: ByteArray) {
         viewModelScope.launch {
             remoteService?.sendData(byteArray)
         }
     }
-    fun saveSettingToSharedPref(mode:WorkProfile, device: BluetoothDevice?){
-        val editor  = sharedPreferences.edit()
+
+    fun saveSettingToSharedPref(mode: WorkProfile, device: BluetoothDevice?) {
+        val editor = sharedPreferences.edit()
         editor.putString(KEY_MODE_DEVICE, mode.mName)
         editor.putString(KEY_ADDRESS_DEVICE, device?.address ?: "")
         editor.apply()
     }
-    fun readSettingToSharedPref(){
-        val profileName  =  sharedPreferences.getString(KEY_MODE_DEVICE, WorkProfile.MASTER.mName) ?: WorkProfile.MASTER.mName
+
+    fun readSettingToSharedPref() {
+        val profileName = sharedPreferences.getString(KEY_MODE_DEVICE, WorkProfile.MASTER.mName) ?: WorkProfile.MASTER.mName
         Configuration.findProfileByName(profileName)
         val address = sharedPreferences.getString(KEY_ADDRESS_DEVICE, "00:00:00:00:00:00") ?: "00:00:00:00:00:00"
         Configuration.setLastDevice(address = address)
@@ -67,7 +78,8 @@ class ServiceViewModel @Inject constructor(
         remoteService?.closeConnection()
         remoteService = null
     }
-    companion object{
+
+    companion object {
         const val KEY_MODE_DEVICE = "MODE_DEVICE"
         const val KEY_ADDRESS_DEVICE = "ADDRESS_DEVICE"
     }

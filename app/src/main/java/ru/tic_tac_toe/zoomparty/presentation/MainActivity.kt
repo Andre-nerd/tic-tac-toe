@@ -118,67 +118,67 @@ fun MainScreen(){
 //        MasterOrSlave(serviceViewModel, navController)
 //    }
 //}
-@Composable
-fun SelectWorkProfile(serviceViewModel:ServiceViewModel, navController: NavHostController){
+//@Composable
+//fun SelectWorkProfile(serviceViewModel:ServiceViewModel, navController: NavHostController){
+//
+//    var openDialog by remember { mutableStateOf(false) }
+//    Column {
+//        Button(onClick = { openDialog = !openDialog }) {
+//            Text(text = "Выбрать роль для этого устройства")
+//        }
+//        Button(onClick = {
+//            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
+//        }) {
+//            Text(text = "Послать сообщение")
+//        }
+//        Spacer(modifier = Modifier.weight(1f))
+//        Button(onClick = {
+//            navController.navigate(Route.Game.name)
+//        }) {
+//            Text(text = "Пропустить")
+//        }
+//    }
+//    if (openDialog) {
+//        DialogSelectOptionRadioGroup(
+//            onDismissRequest = { openDialog = false },
+//            onConfirmation = { workProfile ->
+//                openDialog = false
+//                serviceViewModel.connectionWithRemoteService(workProfile, null)
+//            }
+//        )
+//    }
+//}
 
-    var openDialog by remember { mutableStateOf(false) }
-    Column {
-        Button(onClick = { openDialog = !openDialog }) {
-            Text(text = "Выбрать роль для этого устройства")
-        }
-        Button(onClick = {
-            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
-        }) {
-            Text(text = "Послать сообщение")
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {
-            navController.navigate(Route.Game.name)
-        }) {
-            Text(text = "Пропустить")
-        }
-    }
-    if (openDialog) {
-        DialogSelectOptionRadioGroup(
-            onDismissRequest = { openDialog = false },
-            onConfirmation = { workProfile ->
-                openDialog = false
-                serviceViewModel.connectionWithRemoteService(workProfile, null)
-            }
-        )
-    }
-}
-
-@Composable
-fun MasterOrSlave(serviceViewModel:ServiceViewModel, navController: NavHostController){
-
-    var openDialog by remember { mutableStateOf(false) }
-    Column {
-        Button(onClick = { openDialog = !openDialog }) {
-            Text(text = "Выбрать роль для этого устройства")
-        }
-        Button(onClick = {
-            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
-        }) {
-            Text(text = "Послать сообщение")
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {
-            navController.navigate(Route.Game.name)
-        }) {
-            Text(text = "Пропустить")
-        }
-    }
-    if (openDialog) {
-        DialogSelectOptionRadioGroup(
-            onDismissRequest = { openDialog = false },
-            onConfirmation = { workProfile ->
-                openDialog = false
-                serviceViewModel.connectionWithRemoteService(workProfile, null)
-            }
-        )
-    }
-}
+//@Composable
+//fun MasterOrSlave(serviceViewModel:ServiceViewModel, navController: NavHostController){
+//
+//    var openDialog by remember { mutableStateOf(false) }
+//    Column {
+//        Button(onClick = { openDialog = !openDialog }) {
+//            Text(text = "Выбрать роль для этого устройства")
+//        }
+//        Button(onClick = {
+//            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
+//        }) {
+//            Text(text = "Послать сообщение")
+//        }
+//        Spacer(modifier = Modifier.weight(1f))
+//        Button(onClick = {
+//            navController.navigate(Route.Game.name)
+//        }) {
+//            Text(text = "Пропустить")
+//        }
+//    }
+//    if (openDialog) {
+//        DialogSelectOptionRadioGroup(
+//            onDismissRequest = { openDialog = false },
+//            onConfirmation = { workProfile ->
+//                openDialog = false
+//                serviceViewModel.connectionWithRemoteService(workProfile, null)
+//            }
+//        )
+//    }
+//}
 @Composable
 fun GameScreen(serviceViewModel:ServiceViewModel, navController: NavHostController){
     Column {

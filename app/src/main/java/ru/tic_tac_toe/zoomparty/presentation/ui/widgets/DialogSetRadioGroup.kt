@@ -1,5 +1,6 @@
 package ru.tic_tac_toe.zoomparty.presentation.ui.widgets
 
+import android.bluetooth.BluetoothDevice
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -59,6 +59,7 @@ import ru.tic_tac_toe.zoomparty.presentation.ui.theme.supPadding
 
 @Composable
 fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostController) {
+    val context = LocalContext.current
     serviceViewModel.readSettingToSharedPref()
     var isMasterProfile by remember { mutableStateOf(Configuration.profileDevice == WorkProfile.MASTER) }
 
@@ -76,10 +77,15 @@ fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostCont
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = {
+                val device = Configuration.getSelectedDevice()
                 val workProfile = if (isMasterProfile) WorkProfile.MASTER else WorkProfile.SLAVE
-                serviceViewModel.connectionWithRemoteService(workProfile, null)
+                try {
+                    serviceViewModel.connectionWithRemoteService(workProfile, device)
+                } catch (t:Throwable){
+                    Toast.makeText(context,"Ошибка подключения к Bluetooth устройству", Toast.LENGTH_SHORT).show()
+                }
                 navController.navigate(Route.Game.name)
-                serviceViewModel.saveSettingToSharedPref(workProfile, Configuration.getSelectedDevice())
+                serviceViewModel.saveSettingToSharedPref(workProfile, device)
             },
             modifier = Modifier.padding(bottom = sUiPadding.dp)
         ) {

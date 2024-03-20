@@ -14,6 +14,7 @@ import ru.tic_tac_toe.zoomparty.domain.Configuration.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.domain.Configuration.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER
 import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER_VALUE
+import ru.tic_tac_toe.zoomparty.domain.ErrorConnect
 
 import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import java.io.IOException
@@ -54,11 +55,12 @@ class MasterBluetoothService @Inject constructor(private val dataContainer: Wrap
                     continue
                 }
                 mmSocket?.inputStream?.read(dataBuffer)
-                dataContainer.putMessageLastReceived(fBuffer + dataBuffer)
+                dataContainer.putMessageLastReceivedToContainer(fBuffer + dataBuffer)
                 fBuffer.size + dataBuffer.size
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
-                throw e
+                dataContainer.putErrorConnectToContainer(ErrorConnect.DisconnectMasterError(e.message.toString()))
+                break
             }
             Log.d(BT_LOG_TAG, "Server receive numBytes $numBytes")
         }

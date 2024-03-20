@@ -11,8 +11,18 @@ class WrapperDataContainer @Inject constructor(){
     val messageLastReceived: StateFlow<ByteArray>
         get() = _messageLastReceived
 
-    fun putMessageLastReceived(data: ByteArray) {
-        Log.i(BT_LOG_TAG, "fun putMessageLastReceived() | Get message ${data.toList()}")
+    fun putMessageLastReceivedToContainer(data: ByteArray) {
+        Log.i(BT_LOG_TAG, "fun putMessageLastReceivedToContainer() | Get message ${data.toList()}")
         _messageLastReceived.value = data
     }
+
+    private val _errorConnect = MutableStateFlow<ErrorConnect>(ErrorConnect.NoError)
+    val errorConnect: StateFlow<ErrorConnect>
+        get() = _errorConnect
+
+    fun putErrorConnectToContainer(errorConnect: ErrorConnect) {
+        Log.i(BT_LOG_TAG, "fun putErrorConnectToContainer() | Get error ${errorConnect.message}")
+        _errorConnect .value = errorConnect
+    }
+
 }
