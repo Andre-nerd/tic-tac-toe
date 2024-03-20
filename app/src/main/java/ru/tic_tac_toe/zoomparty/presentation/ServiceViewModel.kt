@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.tic_tac_toe.zoomparty.App
 import ru.tic_tac_toe.zoomparty.domain.BaseService
-import ru.tic_tac_toe.zoomparty.domain.RemoteServiceProvider
+import ru.tic_tac_toe.zoomparty.data.service.RemoteServiceProvider
 import ru.tic_tac_toe.zoomparty.domain.WorkProfile
 import javax.inject.Inject
 

@@ -27,7 +27,7 @@ class SlaveBluetoothService @Inject constructor(private val dataContainer: Wrapp
     private var device: BluetoothDevice? = null
 
     init {
-        setDevice(App.bluetoothAdapter.getRemoteDevice("00:D2:79:72:B5:03"))
+        App.bluetoothAdapter?.getRemoteDevice("00:D2:79:72:B5:03")?.let { setDevice(it) }
     }
 
     fun setDevice(device: BluetoothDevice) {
@@ -37,7 +37,7 @@ class SlaveBluetoothService @Inject constructor(private val dataContainer: Wrapp
     private var mmSocket: BluetoothSocket? = null
 
     override fun run() {
-        App.bluetoothAdapter.cancelDiscovery()
+        App.bluetoothAdapter?.cancelDiscovery()
     }
 
     override suspend fun receiveData() {

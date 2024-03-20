@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
@@ -36,6 +37,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
 import i.tic_tac_toe.kotlin.ui.widgets.ShowScreenRationalePermission
+import ru.tic_tac_toe.zoomparty.App
 import ru.tic_tac_toe.zoomparty.presentation.navigation.NavigateRoute
 import ru.tic_tac_toe.zoomparty.presentation.navigation.Route
 import ru.tic_tac_toe.zoomparty.presentation.ui.theme.Tic_tac_toeTheme
@@ -51,6 +53,11 @@ class MainActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(App.bluetoothAdapter == null){
+            Toast.makeText(this,"Bluetooth не доступен на устройстве. Приложение будет закрыто", Toast.LENGTH_LONG).show()
+            Thread.sleep(1000)
+            finish()
+        }
         setContent {
             Tic_tac_toeTheme {
                 // A surface container using the 'background' color from the theme

@@ -22,7 +22,7 @@ class SlaveBindThread(
     }
     @SuppressLint("MissingPermission")
     override fun run() {
-        App.bluetoothAdapter.cancelDiscovery()
+        App.bluetoothAdapter?.cancelDiscovery()
 
         mmSocket?.let { socket ->
             Log.i(BT_LOG_TAG, "Client | ConnectBluetoothThread | get socket  $socket | try connect...")
