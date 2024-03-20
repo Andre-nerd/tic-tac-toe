@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalPermissionsApi::class)
     @Composable
-    private fun FeatureThatRequiresPermissions(serviceViewModel:ServiceViewModel = viewModel()) {
+    private fun FeatureThatRequiresPermissions() {
 
         val permissionsState = rememberMultiplePermissionsState(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

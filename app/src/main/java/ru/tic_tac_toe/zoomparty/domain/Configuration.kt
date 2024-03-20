@@ -7,12 +7,17 @@ object Configuration {
     const val F_BUFFER = 1
     const val DATA_BUFFER = 9
     const val F_BUFFER_VALUE = 36.toByte()
+    const val SHARED_PREF = "SHARED_PREF"
 
     // Mode device MASTER or SLAVE
     var profileDevice: WorkProfile = WorkProfile.MASTER
         private set
-    fun setProfileDevice(profile: WorkProfile) {
+    private fun setProfileDevice(profile: WorkProfile) {
         profileDevice = profile
+    }
+    fun findProfileByName(name:String){
+        val profile  = if(name == WorkProfile.SLAVE.mName) WorkProfile.SLAVE else WorkProfile.MASTER
+        setProfileDevice(profile = profile)
     }
 
     // Last BT device
@@ -20,6 +25,9 @@ object Configuration {
         private set
     fun setLastDevice(device: BluetoothDevice) {
         lDeviceMacAddress = device.address
+    }
+    fun setLastDevice(address:String) {
+        lDeviceMacAddress = address
     }
 
     //List bounded devices

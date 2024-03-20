@@ -59,6 +59,7 @@ import ru.tic_tac_toe.zoomparty.presentation.ui.theme.supPadding
 
 @Composable
 fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostController) {
+    serviceViewModel.readSettingToSharedPref()
     var isMasterProfile by remember { mutableStateOf(Configuration.profileDevice == WorkProfile.MASTER) }
 
     Column(
@@ -78,6 +79,7 @@ fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostCont
                 val workProfile = if (isMasterProfile) WorkProfile.MASTER else WorkProfile.SLAVE
                 serviceViewModel.connectionWithRemoteService(workProfile, null)
                 navController.navigate(Route.Game.name)
+                serviceViewModel.saveSettingToSharedPref(workProfile, Configuration.getSelectedDevice())
             },
             modifier = Modifier.padding(bottom = sUiPadding.dp)
         ) {
@@ -122,9 +124,13 @@ fun SelectMasterSlave(callback: (Boolean) -> Unit) {
 @SuppressLint("MissingPermission")
 @Composable
 fun SelectBTDevice() {
-    val btDevice = Configuration.lDeviceMacAddress
-    val nameDevice:String  = "no name"
-    val macDevice = "00:00:00:00:00:00"
+    var nameDevice: String = "no name"
+    var macDevice = "00:00:00:00:00:00"
+    val lastDevice  = Configuration.getSelectedDevice()
+    if(lastDevice != null) {
+        nameDevice = lastDevice.name
+        macDevice = lastDevice.address
+    }
     val fullName  = "$nameDevice : $macDevice"
 
     var openSelectBtDevice by remember { mutableStateOf(false) }
@@ -155,7 +161,7 @@ fun SelectBTDevice() {
             onConfirmation = { device ->
                 selectedDevice = device.name
                 openSelectBtDevice = !openSelectBtDevice
-//                putDeviceBT(device)
+                Configuration.setLastDevice(device)
             }
         )
     }
