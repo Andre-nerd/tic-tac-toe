@@ -10,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.tic_tac_toe.zoomparty.domain.BaseService
+import ru.tic_tac_toe.zoomparty.domain.Configuration
 import ru.tic_tac_toe.zoomparty.domain.Configuration.BT_LOG_TAG
 import ru.tic_tac_toe.zoomparty.domain.Configuration.DATA_BUFFER
 import ru.tic_tac_toe.zoomparty.domain.Configuration.F_BUFFER
@@ -59,6 +60,7 @@ class MasterBluetoothService @Inject constructor(private val dataContainer: Wrap
                 fBuffer.size + dataBuffer.size
             } catch (e: IOException) {
                 Log.d(BT_LOG_TAG, "Input stream was disconnected", e)
+                Log.e(Configuration.BT_LOG_TAG, "fun receiveData() | WrapperDataContainer  $dataContainer")
                 dataContainer.putErrorConnectToContainer(ErrorConnect.DisconnectMasterError(e.message.toString()))
                 break
             }

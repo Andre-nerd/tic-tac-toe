@@ -8,5 +8,5 @@ sealed class ErrorConnect(val message: String, val name:String) {
     data class DisconnectSlaveError(val m: String): ErrorConnect(m,"Мастер устройство отключено")
     data class DisconnectMasterError(val m: String): ErrorConnect(m,"Игрок отключен")
 
-    object  NoError : ErrorConnect("","")
+    object  NoError : ErrorConnect("","No error")
 }

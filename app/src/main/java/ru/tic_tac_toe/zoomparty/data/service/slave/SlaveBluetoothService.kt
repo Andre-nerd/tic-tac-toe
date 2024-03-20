@@ -49,6 +49,7 @@ class SlaveBluetoothService @Inject constructor(private val dataContainer: Wrapp
                     Log.e(BT_LOG_TAG, "SlaveBluetoothService | Get first byte != $F_BUFFER_VALUE ${fBuffer[0]} | Continue receive ")
                     continue
                 }
+                Log.d(BT_LOG_TAG, "NEXT F_BUFFER_VALUE ")
                 mmSocket?.inputStream?.read(dataBuffer)
                 dataContainer.putMessageLastReceivedToContainer(fBuffer + dataBuffer)
                 fBuffer.size + dataBuffer.size
@@ -79,13 +80,7 @@ class SlaveBluetoothService @Inject constructor(private val dataContainer: Wrapp
             scope.launch {
                 if (mmSocket?.isConnected == true) {
                     Log.d(BT_LOG_TAG, "ConnectedThread fun while (true){")
-                    try {
                         receiveData()
-                    }catch (t:Throwable){
-                        Log.d(BT_LOG_TAG, "ERROR SlaveBluetoothService | fun openConnection() | receiveData()  $t")
-                        throw t
-                    }
-
                 }
             }
         }

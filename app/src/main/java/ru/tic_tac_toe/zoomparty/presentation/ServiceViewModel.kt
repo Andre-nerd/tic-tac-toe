@@ -72,6 +72,10 @@ class ServiceViewModel @Inject constructor(
         Configuration.setLastDevice(address = address)
     }
 
+     fun closeRemoteService(){
+         remoteService?.closeConnection()
+         remoteService = null
+     }
 
     override fun onCleared() {
         super.onCleared()

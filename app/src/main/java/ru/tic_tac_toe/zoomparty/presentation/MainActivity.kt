@@ -38,10 +38,12 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
 import i.tic_tac_toe.kotlin.ui.widgets.ShowScreenRationalePermission
 import ru.tic_tac_toe.zoomparty.App
+import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import ru.tic_tac_toe.zoomparty.presentation.navigation.NavigateRoute
 import ru.tic_tac_toe.zoomparty.presentation.navigation.Route
 import ru.tic_tac_toe.zoomparty.presentation.ui.theme.Tic_tac_toeTheme
 import ru.tic_tac_toe.zoomparty.presentation.ui.widgets.DialogSelectOptionRadioGroup
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,6 +53,8 @@ class MainActivity : ComponentActivity() {
             val intent = result.data
         }
     }
+    @Inject
+    lateinit var dataContainer: WrapperDataContainer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(App.bluetoothAdapter == null){
@@ -92,7 +96,7 @@ class MainActivity : ComponentActivity() {
         )
         if (permissionsState.allPermissionsGranted) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                MainScreen()
+                MainScreen(dataContainer)
             }
         } else {
             ShowScreenRationalePermission(permissionsState)
@@ -106,90 +110,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(){
+fun MainScreen(dataContainer: WrapperDataContainer){
     val navController = rememberNavController()
-    NavigateRoute(navController = navController)
+    NavigateRoute(navController = navController, dataContainer = dataContainer)
 }
 
 
-//@Composable
-//fun SettingScreen(serviceViewModel:ServiceViewModel,navController: NavHostController) {
-//    Column {
-//        MasterOrSlave(serviceViewModel, navController)
-//    }
-//}
-//@Composable
-//fun SelectWorkProfile(serviceViewModel:ServiceViewModel, navController: NavHostController){
-//
-//    var openDialog by remember { mutableStateOf(false) }
-//    Column {
-//        Button(onClick = { openDialog = !openDialog }) {
-//            Text(text = "Выбрать роль для этого устройства")
-//        }
-//        Button(onClick = {
-//            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
-//        }) {
-//            Text(text = "Послать сообщение")
-//        }
-//        Spacer(modifier = Modifier.weight(1f))
-//        Button(onClick = {
-//            navController.navigate(Route.Game.name)
-//        }) {
-//            Text(text = "Пропустить")
-//        }
-//    }
-//    if (openDialog) {
-//        DialogSelectOptionRadioGroup(
-//            onDismissRequest = { openDialog = false },
-//            onConfirmation = { workProfile ->
-//                openDialog = false
-//                serviceViewModel.connectionWithRemoteService(workProfile, null)
-//            }
-//        )
-//    }
-//}
-
-//@Composable
-//fun MasterOrSlave(serviceViewModel:ServiceViewModel, navController: NavHostController){
-//
-//    var openDialog by remember { mutableStateOf(false) }
-//    Column {
-//        Button(onClick = { openDialog = !openDialog }) {
-//            Text(text = "Выбрать роль для этого устройства")
-//        }
-//        Button(onClick = {
-//            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
-//        }) {
-//            Text(text = "Послать сообщение")
-//        }
-//        Spacer(modifier = Modifier.weight(1f))
-//        Button(onClick = {
-//            navController.navigate(Route.Game.name)
-//        }) {
-//            Text(text = "Пропустить")
-//        }
-//    }
-//    if (openDialog) {
-//        DialogSelectOptionRadioGroup(
-//            onDismissRequest = { openDialog = false },
-//            onConfirmation = { workProfile ->
-//                openDialog = false
-//                serviceViewModel.connectionWithRemoteService(workProfile, null)
-//            }
-//        )
-//    }
-//}
-@Composable
-fun GameScreen(serviceViewModel:ServiceViewModel, navController: NavHostController){
-    Column {
-        Button(onClick = { navController.navigate(Route.Setting.name) }) {
-            Text(text = "Это гейм скрин")
-        }
-        Button(onClick = {
-            serviceViewModel.sendData(byteArrayOf(36, 99, 77, 55, 22))
-        }) {
-            Text(text = "Послать сообщение")
-        }
-    }
-}
 
