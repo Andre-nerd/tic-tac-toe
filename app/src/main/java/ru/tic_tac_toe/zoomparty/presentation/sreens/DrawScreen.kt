@@ -8,77 +8,79 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
 import ru.tic_tac_toe.zoomparty.domain.Configuration
+import ru.tic_tac_toe.zoomparty.domain.DataPath
 import ru.tic_tac_toe.zoomparty.domain.WrapperDataContainer
 import ru.tic_tac_toe.zoomparty.presentation.ui.theme.sUiPadding
 
 @Composable
 fun DrawScreen(dataContainer: WrapperDataContainer, callback: (cX: Float, cY: Float, dX: Float, dY: Float) -> Unit) {
     Log.d(Configuration.DRAW_LOG_TAG, "DrawScreen | recompouse")
-    val ePath = remember { mutableStateOf(Path()) }
-    val tempPath = Path()
-    val path = remember { mutableStateOf(Path()) }
+    var tempPath = Path()
+    val pathList = remember { mutableStateListOf(DataPath()) }
+    var lineWidth by remember { mutableFloatStateOf(10f) }
 
 
     Column {
-        var colorState = remember { mutableStateOf(Color.DarkGray)}
+        var dataPath = remember { mutableStateOf(DataPath())}
         Canvas(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.85f)
             .pointerInput(true) {
-                detectDragGestures { change, dragAmount ->
+                detectDragGestures(
+                    onDragStart = { tempPath = Path() }
+                ) { change, dragAmount ->
                     tempPath.moveTo(change.position.x - dragAmount.x, change.position.y - dragAmount.y)
                     tempPath.lineTo(change.position.x, change.position.y)
                     callback.invoke(change.position.x, change.position.y, dragAmount.x, dragAmount.y)
-                    path.value = Path().apply {
-                        addPath(tempPath)
-                    }
+                    pathList.add(dataPath.value.copy(path = tempPath))
                 }
             }) {
-            Log.d(Configuration.DRAW_LOG_TAG, "DrawScreen | Canvas ePoints ${ePath.value}")
-            drawPath(
-                path = path.value,
-                color = colorState.value,
-                style = Stroke(width = 50f, cap = StrokeCap.Round)
-            )
+            pathList.forEach { dataPath ->
+                drawPath(
+                    path = dataPath.path,
+                    color = Color(dataPath.color),
+                    style = Stroke(width = dataPath.lWidth, cap = StrokeCap.Round)
+                )
+            }
+
         }
-        BottomPanel(callback = { color -> colorState.value = color })
+        ColorPalette(callback = { color -> dataPath.value = dataPath.value.copy( color = color.value) })
+        Slider(
+            value = lineWidth,
+            onValueChange = {width->
+                lineWidth = width
+                dataPath.value  = dataPath.value.copy( lWidth = width)
+            },
+            valueRange = 1f..50f,
+            steps = 49
+        )
     }
 }
 
 @Composable
-fun BottomPanel(callback: (Color) -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ColorPalette(callback = callback)
-    }
-}
-
-@Composable
-fun ColorPalette(callback: (Color) -> Unit) {
+fun ColorPalette(callback: (color:Color) -> Unit) {
     val colors = listOf(
         Color.Red,
         Color.Yellow,
@@ -88,14 +90,16 @@ fun ColorPalette(callback: (Color) -> Unit) {
         Color.Green,
         Color.DarkGray
     )
-    LazyRow(modifier = Modifier.padding(sUiPadding.dp)) {
-        items(colors) { color ->
-            Box(modifier = Modifier
-                .padding(sUiPadding.dp)
-                .clickable { callback.invoke(color) }
-                .size(30.dp)
-                .background(color, CircleShape)
-            )
+    Column {
+        LazyRow(modifier = Modifier.padding(sUiPadding.dp)) {
+            items(colors) { color ->
+                Box(modifier = Modifier
+                    .padding(sUiPadding.dp)
+                    .clickable { callback.invoke(color) }
+                    .size((sUiPadding * 2).dp)
+                    .background(color, CircleShape)
+                )
+            }
         }
     }
 }
