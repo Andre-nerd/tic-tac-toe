@@ -19,4 +19,11 @@ object ParserMessages {
         Log.i(Configuration.DRAW_LOG_TAG, "DrawScreen get new message $res")
         return res
     }
+
+    fun getColorAndWidthLine(message: ByteArray):Pair<ULong,Float>{
+        val color = getULongFromByteArray(byteArrayOf(message[22],message[23],message[24],message[25],message[26],message[27],message[28],message[29]))
+        val width = getFloatFromByteArray(byteArrayOf(message[30],message[31],message[32],message[33]))
+        Log.i(Configuration.DRAW_LOG_TAG, "DrawScreen get new color and width $color |  $width")
+        return color to width
+    }
 }

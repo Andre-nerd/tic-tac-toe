@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +16,11 @@ import ru.tic_tac_toe.zoomparty.data.service.RemoteServiceProvider
 import ru.tic_tac_toe.zoomparty.domain.Configuration
 import ru.tic_tac_toe.zoomparty.domain.Configuration.SHARED_PREF
 import ru.tic_tac_toe.zoomparty.domain.WorkProfile
+import ru.tic_tac_toe.zoomparty.domain.createMessage
 import ru.tic_tac_toe.zoomparty.domain.getByteArrayFromFloat
+import ru.tic_tac_toe.zoomparty.domain.getByteArrayFromLong
 import ru.tic_tac_toe.zoomparty.domain.getFloatFromByteArray
+import ru.tic_tac_toe.zoomparty.domain.getULongFromByteArray
 import java.io.IOException
 import javax.inject.Inject
 
@@ -45,9 +49,9 @@ class ServiceViewModel @Inject constructor(
 
     private fun connectWithRemoteService(device: BluetoothDevice?) {
         viewModelScope.launch {
-            try{
+            try {
                 remoteService?.openConnection(device)
-            } catch(e:Throwable){
+            } catch (e: Throwable) {
                 Log.e(Configuration.BT_LOG_TAG, "ERROR ServiceViewModel | fun connectWithRemoteService | remoteService?.openConnection(device):$e")
             }
         }
@@ -73,22 +77,13 @@ class ServiceViewModel @Inject constructor(
         Configuration.setLastDevice(address = address)
     }
 
-     fun closeRemoteService(){
-         remoteService?.closeConnection()
-         remoteService = null
-     }
+    fun closeRemoteService() {
+        remoteService?.closeConnection()
+        remoteService = null
+    }
 
-    fun sendDragAmountToRemoteService(cX:Float,cY:Float, dX:Float, dY:Float){
-        val dFrame  = ByteArray(18)
-        dFrame[0] = 36.toByte()
-        dFrame[1] = 1.toByte()
-        for(i in 2..5) dFrame[i] = cX.getByteArrayFromFloat()[i-2]
-        for(i in 6..9) dFrame[i] = cY.getByteArrayFromFloat()[i-6]
-        for(i in 10..13) dFrame[i] = dX.getByteArrayFromFloat()[i-10]
-        for(i in 14..17) dFrame[i] = dY.getByteArrayFromFloat()[i-14]
-        Log.e(Configuration.DRAW_LOG_TAG, "sendDragAmountToRemoteService | ${dFrame.toList()}")
-        val temp = byteArrayOf(dFrame[2],dFrame[3],dFrame[4],dFrame[5])
-        Log.e(Configuration.DRAW_LOG_TAG, "float | ${getFloatFromByteArray(temp)}")
+    fun sendDragAmountToRemoteService(cX: Float, cY: Float, dX: Float, dY: Float, color:Long, widthLine:Float) {
+        val dFrame = createMessage(cX, cY, dX, dY, color, widthLine)
         sendData(dFrame)
     }
 

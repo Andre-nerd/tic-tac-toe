@@ -22,9 +22,9 @@ fun GameScreen(serviceViewModel: ServiceViewModel, navController: NavHostControl
     Log.e(Configuration.BT_LOG_TAG, "openErrorWindow.value | WrapperDataContainer  $dataContainer")
     val openErrorWindow  = dataContainer.errorConnect.collectAsState()
     Box {
-        DrawScreen(dataContainer){cX,cY,dX,dY ->
+        DrawScreen(dataContainer){cX,cY,dX,dY,color,width ->
             Log.e(Configuration.DRAW_LOG_TAG, "cX,cY,dX,dY -> $cX, $cY, $dX, $dY ->")
-            serviceViewModel.sendDragAmountToRemoteService(cX,cY,dX,dY)
+            serviceViewModel.sendDragAmountToRemoteService(cX,cY,dX,dY,color, width)
         }
     }
     Column {
