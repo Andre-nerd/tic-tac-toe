@@ -4,9 +4,11 @@ import android.bluetooth.BluetoothDevice
 
 object Configuration {
     const val BT_LOG_TAG = "BT_LOG_TAG"
+    const val DRAW_LOG_TAG = "DRAW_LOG_TAG"
     const val F_BUFFER = 1
-    const val DATA_BUFFER = 9
+    const val DATA_BUFFER = 17
     const val F_BUFFER_VALUE = 36.toByte()
+    const val PATH_DATA = 1.toByte()
     const val SHARED_PREF = "SHARED_PREF"
 
     // Mode device MASTER or SLAVE

@@ -1,6 +1,7 @@
 package ru.tic_tac_toe.zoomparty.presentation.sreens
 
 import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Button
@@ -20,6 +21,12 @@ import ru.tic_tac_toe.zoomparty.presentation.ui.widgets.DialogError
 fun GameScreen(serviceViewModel: ServiceViewModel, navController: NavHostController, dataContainer: WrapperDataContainer){
     Log.e(Configuration.BT_LOG_TAG, "openErrorWindow.value | WrapperDataContainer  $dataContainer")
     val openErrorWindow  = dataContainer.errorConnect.collectAsState()
+    Box {
+        DrawScreen(dataContainer){cX,cY,dX,dY ->
+            Log.e(Configuration.DRAW_LOG_TAG, "cX,cY,dX,dY -> $cX, $cY, $dX, $dY ->")
+            serviceViewModel.sendDragAmountToRemoteService(cX,cY,dX,dY)
+        }
+    }
     Column {
         Button(onClick = { navController.navigate(Route.Setting.name) }) {
             Text(text = "Это гейм скрин")

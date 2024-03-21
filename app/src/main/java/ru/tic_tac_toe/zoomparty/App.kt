@@ -19,7 +19,7 @@ class App : Application() {
             bluetoothAdapter = bluetoothManager.adapter
             Configuration.setBoundedDevices(bluetoothAdapter!!.bondedDevices)
         } catch (t:Throwable){
-            Log.e(Configuration.BT_LOG_TAG, "Bluetooth adapter is not available")
+            Log.e(Configuration.BT_LOG_TAG, getString(R.string.bluetooth_adapter_is_not_available))
         }
     }
 

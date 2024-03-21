@@ -61,8 +61,11 @@ import ru.tic_tac_toe.zoomparty.presentation.ui.theme.supPadding
 fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostController) {
     val context = LocalContext.current
     serviceViewModel.readSettingToSharedPref()
+    val beginSession = stringResource(R.string.begin_session)
+    val connectToGame = stringResource(R.string.connect_to_game)
+    val btNotConnected = stringResource(R.string.bluetooth_not_connected)
     var isMasterProfile by remember { mutableStateOf(Configuration.profileDevice == WorkProfile.MASTER) }
-    var textButton by remember { mutableStateOf(if (isMasterProfile) "Начать сессию" else "подключиться к игре") }
+    var textButton by remember { mutableStateOf(if (isMasterProfile) beginSession else connectToGame) }
 
     Column(
         modifier = Modifier
@@ -74,7 +77,7 @@ fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostCont
     ) {
         SelectMasterSlave(callback = { value ->
             isMasterProfile = value
-            textButton = if (isMasterProfile) "Начать сессию" else "подключиться к игре"
+            textButton = if (isMasterProfile) beginSession  else connectToGame
         })
         Spacer(modifier = Modifier.size(largePadding.dp))
         if (isMasterProfile.not()) SelectBTDevice()
@@ -86,7 +89,7 @@ fun SettingScreen(serviceViewModel: ServiceViewModel, navController: NavHostCont
                 try {
                     serviceViewModel.connectionWithRemoteService(workProfile, device)
                 } catch (t: Throwable) {
-                    Toast.makeText(context, "Ошибка подключения к Bluetooth устройству", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, btNotConnected, Toast.LENGTH_SHORT).show()
                 }
                 navController.navigate(Route.Game.name)
                 serviceViewModel.saveSettingToSharedPref(workProfile, device)
@@ -104,7 +107,7 @@ fun SelectMasterSlave(callback: (Boolean) -> Unit) {
     val selected = if (Configuration.profileDevice == WorkProfile.MASTER) 0 else 1
     var selectedOption by remember { mutableStateOf(radioOptions[selected]) }
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Это устройство выступит как: ", style = styleLargeText)
+        Text(text = stringResource(R.string.mode_of_device), style = styleLargeText)
         Spacer(modifier = Modifier.size(sUiPadding.dp))
         Row(horizontalArrangement = Arrangement.SpaceAround) {
             radioOptions.forEach { choiceName ->
@@ -135,8 +138,8 @@ fun SelectMasterSlave(callback: (Boolean) -> Unit) {
 @SuppressLint("MissingPermission")
 @Composable
 fun SelectBTDevice() {
-    var nameDevice: String = "no name"
-    var macDevice = "00:00:00:00:00:00"
+    var nameDevice: String = stringResource(R.string.no_name)
+    var macDevice = stringResource(R.string._00_00_00_00_00_00)
     val lastDevice = Configuration.getSelectedDevice()
     if (lastDevice != null) {
         nameDevice = lastDevice.name
@@ -146,10 +149,6 @@ fun SelectBTDevice() {
 
     var openSelectBtDevice by remember { mutableStateOf(false) }
     var selectedDevice by remember { mutableStateOf(nameDevice) }
-
-//    val nameDevice = bluetoothDevice?.name ?: "no name"
-//    val macDevice = bluetoothDevice?.address ?: "00:00:00:00:00:00"
-//    val fullName  = "$nameDevice : $macDevice"
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         Text(text = "Подключиться к мастер-устройству:", style = styleAboutTextBold)
@@ -235,8 +234,8 @@ fun DialogSelectBTDevice(
                 }
                 Spacer(modifier = Modifier.size(20.dp))
                 radioOptions.forEach { choiceName ->
-                    val nameDevice = choiceName.name ?: "no name"
-                    val macDevice = choiceName.address ?: "00:00:00:00:00:00"
+                    val nameDevice = choiceName.name ?: stringResource(R.string.no_name)
+                    val macDevice = choiceName.address ?: stringResource(R.string._00_00_00_00_00_00)
                     val fullName = "$nameDevice : $macDevice"
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
